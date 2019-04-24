@@ -1,0 +1,16 @@
+mangas/
+__pycache__/
+config.yml
+.tox
+japscandownloader.egg-info/
+.coverage
+.pytest_cache
+coverage.xml
+test_chapter/*
+*.cbz
+*.pdf
+build/
+dist/
+*.pyc
+cloudflare-scrape-js2py/
+cfscrape.egg-info/
