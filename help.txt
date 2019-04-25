@@ -1,0 +1,2 @@
+https://github.com/ZeroEpoch1969/RubyRoseBot/blob/master/bot.py#L422
+https://stackoverflow.com/questions/46893460/join-voice-channel-discord-py

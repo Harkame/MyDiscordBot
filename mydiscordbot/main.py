@@ -4,11 +4,6 @@ import sys
 
 import settings.settings as settings
 
-token = ''
-
-
-import discord
-
 class MyClient(discord.Client):
     async def on_ready(self):
         print('Logged on as', self.user)
@@ -30,18 +25,23 @@ def main(arguments):
     bot = commands.Bot(command_prefix='/')
 
     @bot.command()
-    async def ping(ctx):
-        await ctx.send('pong')
+    async def ping(context):
+        await context.send('pong')
 
     @bot.command()
-    async def play(ctx, url):
-        print('play')
-        author = ctx.message.author
-        voice_channel = author.voice_channel
-        vc = await client.join_voice_channel(voice_channel)
+    async def logout(context):
+        await bot.logout()
+        sys.exit()
 
-        player = await vc.create_ytdl_player(url)
-        player.start()
+    @bot.command(pass_context=True)
+    async def play(context, url):
+        author = context.message.author
+        channel = author.voice_channel
+        await bot.join_voice_channel(channel)
+        #vc = await bot.join_voice_channel(author.voice_channel)
+
+        #player = await vc.create_ytdl_player(url)
+    #    player.start()
 
     bot.run(settings.token)
 
