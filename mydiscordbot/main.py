@@ -4,29 +4,10 @@ import sys
 
 import settings.settings as settings
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as', self.user)
-
-    async def on_message(self, message):
-        # don't respond to ourselves
-        if message.author == self.user:
-            return
-
-        if message.content == 'ping':
-            await message.channel.send('pong')
-
 def main(arguments):
     settings.init(arguments)
 
-    #client = MyClient()
-    #client.run(settings.token)
-
-    bot = commands.Bot(command_prefix='/')
-
-    @bot.command()
-    async def ping(context):
-        await context.send('pong')
+    bot = commands.Bot(command_prefix='!')
 
     @bot.command()
     async def logout(context):
@@ -36,8 +17,22 @@ def main(arguments):
     @bot.command(pass_context=True)
     async def play(context, url):
         author = context.message.author
-        channel = author.voice_channel
-        await bot.join_voice_channel(channel)
+        await context.send(author)
+        await context.send(url)
+        channel = author.voice.channel
+
+        if not channel:
+            await ctx.send("You are not connected to a voice channel")
+            return
+
+        voice = bot.voice_clients
+        if voice and voice.is_connected():
+            await voice.move_to(channel)
+        else:
+            voice = await channel.connect()
+            player = await voice.create_ytdl_player(url)
+            player.start()
+
         #vc = await bot.join_voice_channel(author.voice_channel)
 
         #player = await vc.create_ytdl_player(url)
