@@ -1,3 +1,4 @@
 https://github.com/ZeroEpoch1969/RubyRoseBot/blob/master/bot.py#L422
 https://stackoverflow.com/questions/46893460/join-voice-channel-discord-py
 pip install --no-cache-dir -U discord.py[voice]
+https://stackoverflow.com/questions/49246598/youtube-dl-get-audio-link-with-python

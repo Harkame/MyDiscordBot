@@ -1,8 +1,12 @@
+from __future__ import unicode_literals
+
 import discord
 from discord.ext import commands
 import sys
 
 import settings.settings as settings
+
+import youtube_dl
 
 def main(arguments):
     settings.init(arguments)
@@ -30,13 +34,23 @@ def main(arguments):
             await voice.move_to(channel)
         else:
             voice = await channel.connect()
-            player = await voice.create_ytdl_player(url)
-            player.start()
 
-        #vc = await bot.join_voice_channel(author.voice_channel)
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+                'ffmpeg_location' : 'C:\\Users\\Maxime\\Downloads\\ffmpeg-20190428-45048ec-win64-static\\bin',
+                'outtmpl': 'music/test.mp3',
+            }
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
 
-        #player = await vc.create_ytdl_player(url)
-    #    player.start()
+        #f = open("myfile.jpg", "rb")
+
+
 
     bot.run(settings.token)
 
