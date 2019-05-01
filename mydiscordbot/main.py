@@ -18,7 +18,7 @@ from youtube_dl import YoutubeDL
 
 ytdlopts = {
     'format': 'bestaudio/best',
-    'outtmpl': 'downloads/%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'outtmpl': 'music/%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'restrictfilenames': True,
     'noplaylist': True,
     'nocheckcertificate': True,
