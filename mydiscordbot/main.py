@@ -27,7 +27,7 @@ ytdlopts = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0',  # ipv6 addresses cause issues sometimes
+    'source_address': '0.0.0.0',
 }
 
 ffmpegopts = {
@@ -36,15 +36,6 @@ ffmpegopts = {
 }
 
 ytdl = YoutubeDL(ytdlopts)
-
-
-class VoiceConnectionError(commands.CommandError):
-    """Custom Exception class for connection errors."""
-
-
-class InvalidVoiceChannel(VoiceConnectionError):
-    """Exception for cases of invalid Voice Channels."""
-
 
 class YTDLSource(discord.PCMVolumeTransformer):
 
@@ -60,7 +51,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return self.__getattribute__(item)
 
     @classmethod
-    async def create_source(cls, ctx, search: str, *, loop, download=False):
+    async def create_source(cls, context, search: str, *, loop, download=False):
         loop = loop or asyncio.get_event_loop()
 
         to_run = partial(ytdl.extract_info, url=search, download=download)
@@ -70,19 +61,17 @@ class YTDLSource(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
 
-        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
+        await context.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
 
         if download:
             source = ytdl.prepare_filename(data)
         else:
-            return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
+            return {'webpage_url': data['webpage_url'], 'requester': context.author, 'title': data['title']}
 
-        return cls(discord.FFmpegPCMAudio(source), data=data, requester=ctx.author)
+        return cls(discord.FFmpegPCMAudio(source), data=data, requester=context.author)
 
     @classmethod
     async def regather_stream(cls, data, *, loop):
-        """Used for preparing a stream, instead of downloading.
-        Since Youtube Streaming links expire."""
         loop = loop or asyncio.get_event_loop()
         requester = data['requester']
 
@@ -98,20 +87,19 @@ def main(arguments):
     bot = commands.Bot(command_prefix='!')
 
     @bot.command()
-    async def logout(context):
+    async def rekt(context):
         await bot.logout()
         sys.exit()
 
     @bot.command(pass_context=True)
-    async def play(context, url):
+    async def play(context, *song_name):
         author = context.message.author
-        await context.send(author)
-        await context.send(url)
-        channel = author.voice.channel
 
-        if not channel:
-            await ctx.send("You are not connected to a voice channel")
+        if not author.voice:
+            await context.send('You are not connected to a voice channel')
             return
+
+        channel = author.voice.channel
 
         voice = bot.voice_clients
         if voice and voice.is_connected():
@@ -119,13 +107,54 @@ def main(arguments):
         else:
             voice = await channel.connect()
 
-            source = await YTDLSource.create_source(context, url, loop=bot.loop, download=True)
+        formated_song_name = " ".join(song_name)
 
-            voice.play(source)
+        source = await YTDLSource.create_source(context, formated_song_name, loop=bot.loop, download=True)
 
-        #f = open("myfile.jpg", "rb")
+        voice.play(source)
+
+    @bot.command(pass_context=True)
+    async def pause(context):
+        vc = context.voice_clients
+        vc.pause()
+
+    @bot.command(pass_context=True)
+    async def resume(context):
+        vc = context.voice_clients
+        vc.resume()
+
+    @bot.command(pass_context=True)
+    async def stop(context):
+        vc = bot.voice_clients
+        vc.stop()
 
 
+    @bot.command(pass_context=True)
+    async def volume(context, volume):
+        vc = context.voice_client
+
+        if not vc or not vc.is_connected():
+            return await context.send('I am not currently connected to voice!', delete_after=20)
+
+        if not 0 < vol < 101:
+            return await context.send('Please enter a value between 1 and 100.')
+
+        player = self.get_player(context)
+
+        if vc.source:
+            vc.source.volume = vol / 100
+
+        player.volume = vol / 100
+        await context.send(f'**`{context.author}`**: Set the volume to **{vol}%**')
+
+
+    @bot.command(pass_context=True)
+    async def customplay(context):
+        guild = context.guild.voice_channels
+
+        #channel = discord.utils.get(guild.voice_channels, name='Général', bitrate=64000)
+        #if channel is not None:
+        await context.send(guild)
 
     bot.run(settings.token)
 
