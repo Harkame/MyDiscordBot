@@ -12,6 +12,7 @@ import sys
 import settings.settings as settings
 
 from cogs.music_cog import Music
+from cogs.random_cog import Random
 
 settings.init(sys.argv[1:])
 
@@ -30,4 +31,5 @@ async def on_ready():
 
 
 bot.add_cog(Music(bot))
+bot.add_cog(Random(bot))
 bot.run(settings.token)

@@ -173,7 +173,6 @@ class Music(commands.Cog):
 
     @commands.command(name='now_playing', aliases=['np', 'current', 'currentsong', 'playing'])
     async def now_playing_(self, context):
-        """Display information about the currently playing song."""
         vc = context.voice_client
 
         if not vc or not vc.is_connected():
