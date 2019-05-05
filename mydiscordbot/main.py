@@ -13,6 +13,8 @@ import settings.settings as settings
 
 from cogs.music_cog import Music
 
+settings.init(sys.argv[1:])
+
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
                    description='MyDiscordBot')
 
@@ -25,6 +27,7 @@ async def rekt(context):
 async def on_ready():
     print('Logged in as {0} ({0.id})'.format(bot.user))
     print('------')
+
 
 bot.add_cog(Music(bot))
 bot.run(settings.token)
