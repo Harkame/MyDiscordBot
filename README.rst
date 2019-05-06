@@ -17,13 +17,9 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
--  `Beautiful Soup 4`_
-
 -  `PyYAML`_
 
 -  `lxml`_
-
--  `Requests`_
 
 Usage
 -----
