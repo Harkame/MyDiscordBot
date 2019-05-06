@@ -5,7 +5,7 @@ MYDiscordBot
 
 Inspired by
 -----------
--  `_eviipy_bot`
+-  `_eviipy_bot`_
 
 Installation
 ------------
@@ -29,7 +29,7 @@ Run
 
 .. code:: bash
 
-   python mydiscordbot/main.py -t mt
+   python mydiscordbot/main.py -t my_token
 
 Options
 ~~~~~~~
