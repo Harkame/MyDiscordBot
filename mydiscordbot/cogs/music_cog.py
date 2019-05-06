@@ -9,19 +9,11 @@ from discord.ext import commands
 
 import sys
 
-import settings.settings as settings
-
-import asyncio
 import itertools
-import sys
 import traceback
 from async_timeout import timeout
-from functools import partial
-from youtube_dl import YoutubeDL
 
 TIMEOUT_CHANNEl = 30
-
-(commands.Cog)
 
 class Music(commands.Cog):
     __slots__ = ('bot', 'players')

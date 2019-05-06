@@ -1,8 +1,6 @@
 from helper.argument_helper import get_arguments
-from helper.config_helper import get_config
 
 import logging
-import os
 
 logger = logging.getLogger()
 token = None
