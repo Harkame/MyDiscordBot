@@ -5,7 +5,7 @@ MYDiscordBot
 
 Inspired by
 -----------
--  `_eviipy_bot`_
+-  `eviipy_bot`_
 
 Installation
 ------------
