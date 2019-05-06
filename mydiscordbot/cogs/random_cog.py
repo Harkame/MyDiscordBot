@@ -17,11 +17,11 @@ class Random(commands.Cog):
     @commands.command(name='random', aliases=['rand'])
     async def random(self, context, *args : int):
         if len(args) == 1:
-            value = random.randrange(args[0])
+            value = random.randrange(args[0] + 1)
         if len(args) == 2:
-            value = random.randrange(args[0], args[1])
+            value = random.randrange(args[0], args[1] + 1)
         if len(args) == 3:
-            value = random.randrange(args[0], args[1], args[2])
+            value = random.randrange(args[0], args[1] + 1, args[2])
         else:
             pass
 
