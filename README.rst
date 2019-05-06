@@ -53,6 +53,7 @@ TODO
 .. _lxml: https://github.com/lxml/lxml.git
 .. _eviipy_bot: https://gist.github.com/EvieePy/ab667b74e9758433b3eb806c53a19f34
 
-.. |Codacy Badge| .. image:: https://api.codacy.com/project/badge/Grade/a2edf760e13546db92ed8e0d6537161a    :target: https://www.codacy.com/app/Harkame/MyDiscordBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Harkame/MyDiscordBot&amp;utm_campaign=Badge_Grade
+.. |Codacy Badge| .. image:: https://api.codacy.com/project/badge/Grade/a2edf760e13546db92ed8e0d6537161a
+   :target: https://www.codacy.com/app/Harkame/MyDiscordBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Harkame/MyDiscordBot&amp;utm_campaign=Badge_Grade
 .. |License: GPL v3| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
    :target: https://www.gnu.org/licenses/gpl-3.0
