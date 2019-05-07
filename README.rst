@@ -24,7 +24,7 @@ Dependencies
 Heroku
 ------
 
-Create an config var : API_KEY <my_discord_bot_api_key>
+Create an config var : DISCORD_BOT_TOKEN <my_discord_bot_token>
 
 Edit Procfile if necessary
 
