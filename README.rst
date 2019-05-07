@@ -21,6 +21,13 @@ Dependencies
 
 -  `lxml`_
 
+Heroku
+------
+
+Create an config var : API_KEY <my_discord_bot_api_key>
+
+Edit Procfile if necessary
+
 Usage
 -----
 
