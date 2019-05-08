@@ -15,6 +15,13 @@ from async_timeout import timeout
 
 TIMEOUT_CHANNEl = 30
 
+class VoiceConnectionError(commands.CommandError):
+    """Custom Exception class for connection errors."""
+
+
+class InvalidVoiceChannel(VoiceConnectionError):
+    """Exception for cases of invalid Voice Channels."""
+
 class Music(commands.Cog):
     __slots__ = ('bot', 'players')
 
@@ -64,10 +71,10 @@ class Music(commands.Cog):
     @commands.command(name='connect', aliases=['join'])
     async def connect_(self, context, *, channel: discord.VoiceChannel=None):
         if not channel:
-            try:
-                channel = context.author.voice.channel
-            except AttributeError:
+            if not context.author.voice:
                 raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+
+            channel = context.author.voice.channel
 
         vc = context.voice_client
 
@@ -100,6 +107,16 @@ class Music(commands.Cog):
         source = await YTDLSource.from_url(search, loop=self.bot.loop)
 
         await player.queue.put(source)
+
+    @commands.command()
+    async def play_stream(self, context, *, url):
+        async with context.typing():
+            source = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
+            player = self.get_player(context)
+
+            await player.queue.put(source)
+
+        await context.send('Now playing: {}'.format(player.title))
 
     @commands.command(name='pause')
     async def pause_(self, context):
@@ -258,7 +275,7 @@ class MusicPlayer:
 
             if not isinstance(source, YTDLSource):
                 try:
-                    source = await YTDLSource.from_url(source, loop=self.bot.loop, stream=True)
+                    source = await YTDLSource.from_url(source, loop=self.bot.loop, download=False, stream=True)
                 except Exception as e:
                     await self._channel.send(f'There was an error processing your song.\n'
                                              f'```css\n[{e}]\n```')
@@ -316,7 +333,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=True))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
 
         if 'entries' in data:
             data = data['entries'][0]
