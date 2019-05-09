@@ -16,8 +16,16 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
 
 @bot.command()
 async def rekt(context):
-    await bot.logout()
-    sys.exit()
+    if str(context.author) == 'Harkame#2009':
+        await context.send('Tchao')
+        await bot.logout()
+        sys.exit()
+    else:
+        await context.send('Nop.')
+
+@bot.command()
+async def self(context):
+    await context.send(context.author)
 
 @bot.event
 async def on_ready():
