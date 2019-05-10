@@ -1,7 +1,7 @@
 MYDiscordBot
 ============
 
-|Codacy Badge| |License: GPL v3| |Build Status|
+|Codacy Badge| |Build Status| |License: GPL v3|
 
 Inspired by
 -----------
