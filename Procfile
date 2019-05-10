@@ -1,1 +1,1 @@
-worker: python mydiscordbot/main.py -t $API_KEY
+worker: python mydiscordbot/main.py -t $DISCORD_BOT_TOKEN
