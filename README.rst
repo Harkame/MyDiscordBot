@@ -1,7 +1,7 @@
 MYDiscordBot
-====================
+============
 
-|Codacy Badge| |License: GPL v3|
+|Codacy Badge| |Build Status| |License: GPL v3|
 
 Inspired by
 -----------
@@ -60,3 +60,5 @@ TODO
    :target: https://www.codacy.com/app/Harkame/MyDiscordBot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Harkame/MyDiscordBot&amp;utm_campaign=Badge_Grade
 .. |License: GPL v3| image:: https://img.shields.io/badge/License-GPLv3-blue.svg
    :target: https://www.gnu.org/licenses/gpl-3.0
+.. |Build Status| image:: https://travis-ci.org/Harkame/MyDiscordBot.svg?branch=master
+   :target: https://travis-ci.org/Harkame/MyDiscordBot
