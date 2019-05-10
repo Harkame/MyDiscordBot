@@ -1,4 +1,4 @@
-from helper.argument_helper import get_arguments
+from helpers.argument_helper import get_arguments
 
 import logging
 
