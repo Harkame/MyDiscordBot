@@ -59,7 +59,6 @@ class Music(commands.Cog):
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     def get_player(self, context):
-        """Retrieve the guild player, or generate one."""
         try:
             player = self.players[context.guild.id]
         except KeyError:
@@ -92,7 +91,7 @@ class Music(commands.Cog):
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
 
     @commands.command(name='play', aliases=['sing'])
-    async def play_(self, context, *, search: str):
+    async def play(self, context, *, search: str):
         await context.trigger_typing()
 
         vc = context.voice_client
@@ -101,6 +100,7 @@ class Music(commands.Cog):
             await context.invoke(self.connect_)
 
         player = self.get_player(context)
+
 
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
@@ -241,9 +241,101 @@ class Music(commands.Cog):
 
         await self.cleanup(context.guild)
 
+    @commands.command(name='playist')
+    async def playist(self, context, *parameters):
+
+        player = self.get_player(context)
+
+        if len(parameters) == 0:
+            await context.send('Playists : ')
+            for index in range(len(player.playists)):
+                await context.send('[{}] {}'.format(index, player.playists[index].title))
+
+                return
+
+        if parameters[0] in ['create', 'add']:
+            if len(parameters) == 1:
+                await context.send('Missing playist name')
+                return
+
+            player = self.get_player(context)
+
+            player.create_playist(parameters[1])
+
+            await context.send('Playist {} created'.format(parameters[1]))
+        elif parameters[0] in ['delete', 'remove']:
+            if parameters[1].isdigit():
+                index = int(parameters[1])
+
+                playist_title = player.playists[index].title
+
+                player.playists.pop(index)
+
+                await context.send('Playist {} deleted'.format(playist_title))
+            else:
+                await context.send('Invalid index')
+        elif parameters[0].isdigit():
+            index = int(parameters[0])
+
+            playist = player.playists[index]
+
+            if len(parameters) == 1:
+                await context.send('{} : '.format(playist.title))
+                for index in range(len(playist.urls)):
+                    await context.send('[{}] - {}'.format(index, playist.urls[index]))
+
+                    return
+
+                await context.send('playist index {}:'.format(index))
+            else:
+                if parameters[1] in ['create', 'add']:
+                    playist.urls.append(parameters[2])
+                elif parameters[1] in ['delete', 'remove']:
+                    if len(parameters) == 2:
+                        await context.send('Invalid index')
+                        return
+
+                    if parameters[2].isdigit():
+                        index = int(parameters[2])
+
+                        if index > len(playist.urls):
+                            await context.send('Invalid index')
+                            return
+
+                        title = playist.title
+
+                        url = playist.urls[index]
+
+                        playist.urls.pop(index)
+
+                        await context.send('Url {} removed'.format(url))
+                    else:
+                        await context.send('Invalid index')
+
+                elif parameters[1] == 'rename':
+                    old_name = playist.title
+
+                    playist.title = parameters[2]
+
+                    await context.send('Playist {} renamed to {}'.format(old_name, playist.title))
+                elif parameters[1] == 'play':
+                    if index < len(player.playists):
+                        await context.send('Invalid index')
+                        return
+
+                    playist = player.playists[index]
+
+                    for url in playist.urls:
+                        source = await YTDLSource.from_url(url, loop=self.bot.loop)
+
+                        await player.queue.put(source)
+
+        else:
+            await context.send('Unknow parameters')
+            return
 
 class MusicPlayer:
-    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'now_playing', 'volume')
+    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'now_playing', 'volume', 'playists')
 
     def __init__(self, context):
         self.bot = context.bot
@@ -257,6 +349,8 @@ class MusicPlayer:
         self.now_playing = None  # Now playing message
         self.volume = .5
         self.current = None
+
+        self.playists = []
 
         context.bot.loop.create_task(self.player_loop())
 
@@ -299,6 +393,9 @@ class MusicPlayer:
     def destroy(self, guild):
         return self.bot.loop.create_task(self._cog.cleanup(guild))
 
+    def create_playist(self, title):
+        self.playists.append(Playist(title))
+
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
@@ -340,3 +437,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+
+class Playist:
+    def __init__(self, title):
+        self.title = title
+
+        self.urls = []
+
+    def add_song(url):
+        self.urls.append(url)
