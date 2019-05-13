@@ -12,7 +12,6 @@ def get_arguments(arguments):
         required=True,
     )
 
-
     argument_parser.add_argument(
         '-v', '--verbose',
         help = 'Active verbose mode, support different level' + os.linesep + 'Example : python mydiscordbot/main.py -vv',

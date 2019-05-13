@@ -1,4 +1,7 @@
 from helpers.argument_helper import get_arguments
+from helpers.config_helper import get_config
+
+import os
 
 import logging
 
@@ -6,9 +9,11 @@ logger = logging.getLogger()
 token = None
 
 def init(arguments):
-    global logger
-
     global token
+
+    global playists
+
+    playists = get_config(os.path.join('.', 'playists.yml'))['playists']
 
     init_arguments(arguments)
 
