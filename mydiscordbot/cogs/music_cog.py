@@ -95,7 +95,7 @@ class Music(commands.Cog):
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
 
     @commands.command(name='play', aliases=['sing'])
-    async def play(self, context, *, search: str):
+    async def play(self, context, search : str):
         await context.trigger_typing()
 
         vc = context.voice_client
@@ -105,9 +105,9 @@ class Music(commands.Cog):
 
         player = self.get_player(context)
 
-
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
+
         source = await YTDLSource.from_url(search, loop=self.bot.loop)
 
         await player.queue.put(source)
@@ -290,13 +290,13 @@ class Music(commands.Cog):
             playist = settings.playists[index]
 
             if len(parameters) == 1:
-                await context.send('Playist {} : '.format(playist.title))
+                await context.send('Playist {} : '.format(playist['title']))
 
-                if len(playist.urls) == 0:
+                if len(playist['urls']) == 0:
                     await context.send('No song')
                 else:
-                    for index, key in enumerate(settings.playists):
-                        await context.send('[{}] - {}'.format(index, key))
+                    for index in range(len(playist['urls'])):
+                        await context.send('{} : {}'.format(index, playist['urls'][index]))
                 return
             else:
                 if parameters[1] in ['create', 'add']:
@@ -329,17 +329,26 @@ class Music(commands.Cog):
                     playist.title = parameters[2]
 
                     await context.send('Playist {} renamed to {}'.format(old_name, playist.title))
-                elif parameters[1] == 'play':
-                    if index < len(settings.playists):
-                        await context.send('Invalid index')
-                        return
+                elif parameters[1] in ['play', 'run']:
+                    await context.trigger_typing()
 
-                    playist = settings.playists[index]
+                    vc = context.voice_client
 
-                    for url in playist.urls:
+                    if not vc:
+                        await context.invoke(self.connect_)
+
+                    player = self.get_player(context)
+
+                    # If download is False, source will be a dict which will be used later to regather the stream.
+                    # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
+
+                    for url in playist['urls']:
+
                         source = await YTDLSource.from_url(url, loop=self.bot.loop)
 
                         await player.queue.put(source)
+
+                elif parameters[1] in ['save', 'keep', 'store']:
 
         else:
             await context.send('Unknow parameters')
