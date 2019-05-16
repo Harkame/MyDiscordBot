@@ -4,8 +4,6 @@ import discord
 
 from discord.ext import commands
 
-import random
-
 TIMEOUT_CHANNEl = 30
 
 class Random(commands.Cog):

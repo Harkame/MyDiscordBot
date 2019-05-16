@@ -3,13 +3,8 @@ import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 
 import helpers.argument_helper as argument_helper
-import helpers.config_helper as config_helper
-
-import settings.settings as settings
 
 import unittest
-import numpy
-import shutil
 
 class ArgumentTest(unittest.TestCase):
     def test_short_option(self):
