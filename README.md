@@ -1,5 +1,2 @@
 # MyDiscordBot
-
-Inspired by
-(EvieePy - MusicBot)[https://gist.github.com/EvieePy/ab667b74e9758433b3eb806c53a19f34]
-(Discord.py - Examples)[https://github.com/Rapptz/discord.py]
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/de1b4e0f5a2943ccada12da492fe86a5)](https://app.codacy.com/app/Harkame/MyDiscordBot?utm_source=github.com&utm_medium=referral&utm_content=Harkame/MyDiscordBot&utm_campaign=Badge_Grade_Dashboard)
