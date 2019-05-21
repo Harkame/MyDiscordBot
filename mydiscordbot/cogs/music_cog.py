@@ -17,6 +17,8 @@ from helpers.config_helper import get_config
 
 import settings.settings as settings
 
+import os
+
 TIMEOUT_CHANNEl = 30
 
 class VoiceConnectionError(commands.CommandError):
@@ -349,7 +351,7 @@ class Music(commands.Cog):
                         await player.queue.put(source)
 
                 elif parameters[1] in ['save', 'keep', 'store']:
-
+                    pass;
         else:
             await context.send('Unknow parameters')
             return
@@ -431,7 +433,9 @@ ytdl_format_options = {
 }
 
 ffmpeg_options = {
-    'options': '-vn'
+    'before_options': '-nostdin',
+    'options': '-vn',
+    'executable' : os.path.join('C:/', 'ffmpeg', 'bin', 'ffmpeg.exe'),
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
@@ -448,10 +452,10 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=True))
 
         if 'entries' in data:
             data = data['entries'][0]
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+        return cls(discord.FFmpegPCMAudio(source, **ffmpegopts), data=data)
