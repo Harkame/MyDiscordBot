@@ -13,6 +13,8 @@ import itertools
 import traceback
 from async_timeout import timeout
 
+from functools import partial
+
 from helpers.config_helper import get_config
 
 import settings.settings as settings
@@ -110,7 +112,9 @@ class Music(commands.Cog):
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
 
-        source = await YTDLSource.from_url(search, loop=self.bot.loop)
+        source = await YTDLSource.from_url(context, search, loop=self.bot.loop, download=False)
+
+        #source = await YTDLSource.from_url(search, loop=self.bot.loop)
 
         await player.queue.put(source)
 
@@ -449,6 +453,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.title = data.get('title')
         self.url = data.get('url')
 
+    '''
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
@@ -459,3 +464,24 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(source, **ffmpegopts), data=data)
+    '''
+
+    @classmethod
+    async def from_url(cls, ctx, search: str, *, loop, download=False):
+        loop = loop or asyncio.get_event_loop()
+
+        to_run = partial(ytdl.extract_info, url=search, download=download)
+        data = await loop.run_in_executor(None, to_run)
+
+        if 'entries' in data:
+            # take first item from a playlist
+            data = data['entries'][0]
+
+        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
+
+        if download:
+            source = ytdl.prepare_filename(data)
+        else:
+            return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
+
+        return cls(discord.FFmpegPCMAudio(source, **ffmpegopts), data=data, requester=ctx.author)
