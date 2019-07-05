@@ -3,4 +3,3 @@ discord.py
 discord.py[voice]
 youtube-dl
 PyNaCl
-gettext

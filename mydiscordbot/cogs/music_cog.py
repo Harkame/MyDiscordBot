@@ -495,9 +495,7 @@ class Music(commands.Cog):
                     player = self.get_player(context)
 
                     for url in playist['urls']:
-
-                        source = await YTDLSource.create_source(context, search, loop=self.bot.loop, download=False)
-
+                        source = await YTDLSource.create_source(context, url, loop=self.bot.loop, download=False)
                         await player.queue.put(source)
 
                 elif parameters[1] in ['save', 'keep', 'store']:
