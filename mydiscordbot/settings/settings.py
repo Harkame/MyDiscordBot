@@ -12,7 +12,7 @@ def init(arguments):
 
     global playists
 
-    playists = helper_config.get_config(os.path.join('.', 'playists.yml'))['playists']
+    playists = helper_config.get_config(os.path.join('.', 'playists.yml'))
 
     init_arguments(arguments)
 

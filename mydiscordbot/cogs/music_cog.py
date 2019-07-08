@@ -466,7 +466,10 @@ class Music(commands.Cog):
                 return
             else:
                 if parameters[1] in ['create', 'add']:
-                    playist.urls.append(parameters[2])
+                    playist['urls'].append(parameters[2])
+
+                    await context.send('Song {} added to playist [{}] ({})'.format(parameters[2], index, playist['title']))
+
                 elif parameters[1] in ['delete', 'remove']:
                     if len(parameters) == 2:
                         await context.send('Invalid index')
