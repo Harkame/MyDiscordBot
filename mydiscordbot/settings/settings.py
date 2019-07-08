@@ -1,5 +1,4 @@
-from helpers.argument_helper import get_arguments
-from helpers.config_helper import get_config
+from helpers import helper_config, helper_argument
 
 import os
 
@@ -13,7 +12,7 @@ def init(arguments):
 
     global playists
 
-    playists = get_config(os.path.join('.', 'playists.yml'))['playists']
+    playists = helper_config.get_config(os.path.join('.', 'playists.yml'))['playists']
 
     init_arguments(arguments)
 
@@ -24,7 +23,7 @@ def init_arguments(arguments):
 
     global token
 
-    arguments = get_arguments(arguments)
+    arguments = helper_argument.get_arguments(arguments)
 
     if arguments.verbose:
         logger.setLevel(logging.DEBUG)

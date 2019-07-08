@@ -1,12 +1,9 @@
-playists:
-  -
-    title:
-      my-playist
-    urls:
-      - https://www.youtube.com/watch?v=3OEX_tVDbdw
-      - https://www.youtube.com/watch?v=4Hdwf1pz8kA
-  -
-    title:
-      ghost
-    urls:
-      - https://www.youtube.com/watch?v=4kNetd_lISI&list=RD4kNetd_lISI&start_radio=1
+- title: my-playist
+  urls:
+  - https://www.youtube.com/watch?v=3OEX_tVDbdw
+  - https://www.youtube.com/watch?v=4Hdwf1pz8kA
+- title: ghost
+  urls:
+  - https://www.youtube.com/watch?v=4kNetd_lISI&list=RD4kNetd_lISI&start_radio=1
+- title: toto
+  urls: []

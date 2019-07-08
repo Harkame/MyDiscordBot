@@ -16,6 +16,7 @@ class Random(commands.Cog):
 
     @commands.command(name='random', aliases=['rand'])
     async def random(self, context, *args : int):
+        """Generate random number"""
         if len(args) == 1:
             value = random.randrange(args[0] + 1)
         if len(args) == 2:

@@ -15,11 +15,11 @@ from async_timeout import timeout
 
 from functools import partial
 
-from helpers.config_helper import get_config
-
 import settings.settings as settings
 
 import os
+
+from helpers import helper_config
 
 TIMEOUT_CHANNEl = 30
 
@@ -415,12 +415,20 @@ class Music(commands.Cog):
 
             return
 
-        if parameters[0] in ['create', 'add']:
+        if parameters[0] in ['create', 'add', 'new']:
             if len(parameters) == 1:
                 await context.send('Missing playist name')
                 return
 
-            player.create_playist(parameters[1])
+            playist_name = parameters[1]
+
+            if playist_name in settings.playists:
+                await context.send('Playist name already used')
+                return
+
+            new_playist = {'title' : playist_name, 'urls' : []}
+
+            settings.playists.append(new_playist)
 
             await context.send('Playist {} created'.format(parameters[1]))
         elif parameters[0] in ['delete', 'remove']:
@@ -434,6 +442,9 @@ class Music(commands.Cog):
                 await context.send('Playist {} deleted'.format(playist_title))
             else:
                 await context.send('Invalid index')
+        elif parameters[0] in ['save', 'keep', 'store']:
+            helper_config.write_config(os.path.join('.', 'playists.yml'), settings.playists)
+            await context.send('Playists saved')
         elif parameters[0].isdigit():
             index = int(parameters[0])
 
@@ -497,9 +508,6 @@ class Music(commands.Cog):
                     for url in playist['urls']:
                         source = await YTDLSource.create_source(context, url, loop=self.bot.loop, download=False)
                         await player.queue.put(source)
-
-                elif parameters[1] in ['save', 'keep', 'store']:
-                    pass;
         else:
             await context.send('Unknow parameters')
             return
