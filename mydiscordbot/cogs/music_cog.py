@@ -46,6 +46,7 @@ executable = os.path.join('C:\\', 'ffmpeg', 'bin', 'ffmpeg.exe')
 
 ytdl = YoutubeDL(ytdlopts)
 
+
 class VoiceConnectionError(commands.CommandError):
     """Custom Exception class for connection errors."""
 
@@ -73,7 +74,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return self.__getattribute__(item)
 
     @classmethod
-    async def create_source(cls, ctx, search: str, *, loop, download=False):
+    async def create_source(cls, context, search: str, *, loop, download=False):
         loop = loop or asyncio.get_event_loop()
 
         to_run = partial(ytdl.extract_info, url=search, download=download)
@@ -83,14 +84,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
 
-        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
+        await context.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```', delete_after=15)
 
         if download:
             source = ytdl.prepare_filename(data)
         else:
-            return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
+            return {'webpage_url': data['webpage_url'], 'requester': context.author, 'title': data['title']}
 
-        return cls(discord.FFmpegPCMAudio(source, executable=executable), data=data, requester=ctx.author)
+        return cls(discord.FFmpegPCMAudio(source, executable=executable), data=data, requester=context.author)
 
     @classmethod
     async def regather_stream(cls, data, *, loop):
@@ -99,7 +100,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
         loop = loop or asyncio.get_event_loop()
         requester = data['requester']
 
-        to_run = partial(ytdl.extract_info, url=data['webpage_url'], download=False)
+        to_run = partial(ytdl.extract_info,
+                         url=data['webpage_url'], download=False)
         data = await loop.run_in_executor(None, to_run)
 
         return cls(discord.FFmpegPCMAudio(data['url'], executable=executable), data=data, requester=requester)
@@ -112,13 +114,14 @@ class MusicPlayer:
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
 
-    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
+    __slots__ = ('bot', '_guild', '_channel', '_cog',
+                 'queue', 'next', 'current', 'np', 'volume')
 
-    def __init__(self, ctx):
-        self.bot = ctx.bot
-        self._guild = ctx.guild
-        self._channel = ctx.channel
-        self._cog = ctx.cog
+    def __init__(self, context):
+        self.bot = context.bot
+        self._guild = context.guild
+        self._channel = context.channel
+        self._cog = context.cog
 
         self.queue = asyncio.Queue()
         self.next = asyncio.Event()
@@ -127,7 +130,7 @@ class MusicPlayer:
         self.volume = .5
         self.current = None
 
-        ctx.bot.loop.create_task(self.player_loop())
+        context.bot.loop.create_task(self.player_loop())
 
     async def player_loop(self):
         """Our main player loop."""
@@ -156,7 +159,8 @@ class MusicPlayer:
             source.volume = self.volume
             self.current = source
 
-            self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
+            self._guild.voice_client.play(
+                source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             self.np = await self._channel.send(f'**Now Playing:** `{source.title}` requested by '
                                                f'`{source.requester}`')
             await self.next.wait()
@@ -193,38 +197,39 @@ class Music(commands.Cog):
         except KeyError:
             pass
 
-    async def __local_check(self, ctx):
+    async def __local_check(self, context):
         """A local check which applies to all commands in this cog."""
-        if not ctx.guild:
+        if not context.guild:
             raise commands.NoPrivateMessage
         return True
 
-    async def __error(self, ctx, error):
+    async def __error(self, context, error):
         """A local error handler for all errors arising from commands in this cog."""
         if isinstance(error, commands.NoPrivateMessage):
             try:
-                return await ctx.send('This command can not be used in Private Messages.')
+                return await context.send('This command can not be used in Private Messages.')
             except discord.HTTPException:
                 pass
         elif isinstance(error, InvalidVoiceChannel):
-            await ctx.send('Error connecting to Voice Channel. '
+            await context.send('Error connecting to Voice Channel. '
                            'Please make sure you are in a valid channel or provide me with one')
 
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        print('Ignoring exception in command {}:'.format(context.command), file=sys.stderr)
+        traceback.print_exception(
+            type(error), error, error.__traceback__, file=sys.stderr)
 
-    def get_player(self, ctx):
+    def get_player(self, context):
         """Retrieve the guild player, or generate one."""
         try:
-            player = self.players[ctx.guild.id]
+            player = self.players[context.guild.id]
         except KeyError:
-            player = MusicPlayer(ctx)
-            self.players[ctx.guild.id] = player
+            player = MusicPlayer(context)
+            self.players[context.guild.id] = player
 
         return player
 
     @commands.command(name='connect', aliases=['join'])
-    async def connect_(self, ctx, *, channel: discord.VoiceChannel=None):
+    async def connect_(self, context, *, channel: discord.VoiceChannel = None):
         """Connect to voice.
         Parameters
         ------------
@@ -235,11 +240,12 @@ class Music(commands.Cog):
         """
         if not channel:
             try:
-                channel = ctx.author.voice.channel
+                channel = context.author.voice.channel
             except AttributeError:
-                raise InvalidVoiceChannel('No channel to join. Please either specify a valid channel or join one.')
+                raise InvalidVoiceChannel(
+                    'No channel to join. Please either specify a valid channel or join one.')
 
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if vc:
             if vc.channel.id == channel.id:
@@ -254,10 +260,10 @@ class Music(commands.Cog):
             except asyncio.TimeoutError:
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
 
-        await ctx.send(f'Connected to: **{channel}**', delete_after=20)
+        await context.send(f'Connected to: **{channel}**', delete_after=20)
 
     @commands.command(name='play', aliases=['sing'])
-    async def play_(self, ctx, *, search: str):
+    async def play_(self, context, *, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
         Uses YTDL to automatically search and retrieve a song.
@@ -266,54 +272,54 @@ class Music(commands.Cog):
         search: str [Required]
             The song to search and retrieve using YTDL. This could be a simple search, an ID or URL.
         """
-        await ctx.trigger_typing()
+        await context.trigger_typing()
 
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc:
-            await ctx.invoke(self.connect_)
+            await context.invoke(self.connect_)
 
-        player = self.get_player(ctx)
+        player = self.get_player(context)
 
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
-        source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
+        source = await YTDLSource.create_source(context, search, loop=self.bot.loop, download=False)
 
         await player.queue.put(source)
 
     @commands.command(name='pause')
-    async def pause_(self, ctx):
+    async def pause_(self, context):
         """Pause the currently playing song."""
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_playing():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await context.send('I am not currently playing anything!', delete_after=20)
         elif vc.is_paused():
             return
 
         vc.pause()
-        await ctx.send(f'**`{ctx.author}`**: Paused the song!')
+        await context.send(f'**`{context.author}`**: Paused the song!')
 
     @commands.command(name='resume')
-    async def resume_(self, ctx):
+    async def resume_(self, context):
         """Resume the currently paused song."""
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await context.send('I am not currently playing anything!', delete_after=20)
         elif not vc.is_paused():
             return
 
         vc.resume()
-        await ctx.send(f'**`{ctx.author}`**: Resumed the song!')
+        await context.send(f'**`{context.author}`**: Resumed the song!')
 
     @commands.command(name='skip')
-    async def skip_(self, ctx):
+    async def skip_(self, context):
         """Skip the song."""
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await context.send('I am not currently playing anything!', delete_after=20)
 
         if vc.is_paused():
             pass
@@ -321,19 +327,19 @@ class Music(commands.Cog):
             return
 
         vc.stop()
-        await ctx.send(f'**`{ctx.author}`**: Skipped the song!')
+        await context.send(f'**`{context.author}`**: Skipped the song!')
 
     @commands.command(name='queue', aliases=['q', 'playlist'])
-    async def queue_info(self, ctx):
+    async def queue_info(self, context):
         """Retrieve a basic queue of upcoming songs."""
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await context.send('I am not currently connected to voice!', delete_after=20)
 
-        player = self.get_player(ctx)
+        player = self.get_player(context)
         if player.queue.empty():
-            return await ctx.send('There are currently no more queued songs.')
+            return await context.send('There are currently no more queued songs.')
 
         # Grab up to 5 entries from the queue...
         upcoming = list(itertools.islice(player.queue._queue, 0, 5))
@@ -341,18 +347,18 @@ class Music(commands.Cog):
         fmt = '\n'.join(f'**`{_["title"]}`**' for _ in upcoming)
         embed = discord.Embed(title=f'Upcoming - Next {len(upcoming)}', description=fmt)
 
-        await ctx.send(embed=embed)
+        await context.send(embed=embed)
 
     @commands.command(name='now_playing', aliases=['np', 'current', 'currentsong', 'playing'])
-    async def now_playing_(self, ctx):
-        vc = ctx.voice_client
+    async def now_playing_(self, context):
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await context.send('I am not currently connected to voice!', delete_after=20)
 
-        player = self.get_player(ctx)
+        player = self.get_player(context)
         if not player.current:
-            return await ctx.send('I am not currently playing anything!')
+            return await context.send('I am not currently playing anything!')
 
         try:
             # Remove our previous now_playing message.
@@ -360,45 +366,45 @@ class Music(commands.Cog):
         except discord.HTTPException:
             pass
 
-        player.np = await ctx.send(f'**Now Playing:** `{vc.source.title}` '
+        player.np = await context.send(f'**Now Playing:** `{vc.source.title}` '
                                    f'requested by `{vc.source.requester}`')
 
     @commands.command(name='volume', aliases=['vol'])
-    async def change_volume(self, ctx, *, vol: float):
+    async def change_volume(self, context, *, vol: float):
         """Change the player volume.
         Parameters
         ------------
         volume: float or int [Required]
             The volume to set the player to in percentage. This must be between 1 and 100.
         """
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently connected to voice!', delete_after=20)
+            return await context.send('I am not currently connected to voice!', delete_after=20)
 
         if not 0 < vol < 101:
-            return await ctx.send('Please enter a value between 1 and 100.')
+            return await context.send('Please enter a value between 1 and 100.')
 
-        player = self.get_player(ctx)
+        player = self.get_player(context)
 
         if vc.source:
             vc.source.volume = vol / 100
 
         player.volume = vol / 100
-        await ctx.send(f'**`{ctx.author}`**: Set the volume to **{vol}%**')
+        await context.send(f'**`{context.author}`**: Set the volume to **{vol}%**', delete_after=10)
 
     @commands.command(name='stop')
-    async def stop_(self, ctx):
+    async def stop_(self, context):
         """Stop the currently playing song and destroy the player.
         !Warning!
             This will destroy the player assigned to your guild, also deleting any queued songs and settings.
         """
-        vc = ctx.voice_client
+        vc = context.voice_client
 
         if not vc or not vc.is_connected():
-            return await ctx.send('I am not currently playing anything!', delete_after=20)
+            return await context.send('I am not currently playing anything!', delete_after=10)
 
-        await self.cleanup(ctx.guild)
+        await self.cleanup(context.guild)
 
     @commands.command(name='playist')
     async def playist(self, context, *parameters):
@@ -426,7 +432,7 @@ class Music(commands.Cog):
                 await context.send('Playist name already used')
                 return
 
-            new_playist = {'title' : playist_name, 'urls' : []}
+            new_playist = {'title': playist_name, 'urls': []}
 
             settings.playists.append(new_playist)
 
@@ -443,7 +449,8 @@ class Music(commands.Cog):
             else:
                 await context.send('Invalid index')
         elif parameters[0] in ['save', 'keep', 'store']:
-            helper_config.write_config(os.path.join('.', 'playists.yml'), settings.playists)
+            helper_config.write_config(os.path.join(
+                '.', 'playists.yml'), settings.playists)
             await context.send('Playists saved')
         elif parameters[0].isdigit():
             index = int(parameters[0])
@@ -468,7 +475,7 @@ class Music(commands.Cog):
                 if parameters[1] in ['create', 'add']:
                     playist['urls'].append(parameters[2])
 
-                    await context.send('Song {} added to playist [{}] ({})'.format(parameters[2], index, playist['title']))
+                    await context.send(f"Song '{parameters[2]}' added to playist [{index}] ({playist['title']}")
 
                 elif parameters[1] in ['delete', 'remove']:
                     if len(parameters) == 2:
@@ -478,17 +485,17 @@ class Music(commands.Cog):
                     if parameters[2].isdigit():
                         index = int(parameters[2])
 
-                        if index > len(playist.urls):
+                        if index > len(playist['urls']):
                             await context.send('Invalid index')
                             return
 
-                        title = playist.title
+                        title = playist['title']
 
-                        url = playist.urls[index]
+                        url = playist['urls'][index]
 
-                        playist.urls.pop(index)
+                        playist['urls'].pop(index)
 
-                        await context.send('Url {} removed'.format(url))
+                        await context.send(f'`{url}` removed')
                     else:
                         await context.send('Invalid index')
 

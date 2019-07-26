@@ -11,8 +11,9 @@ from cogs.random_cog import Random
 
 settings.init(sys.argv[1:])
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
-                   description='MyDiscordBot')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(
+    "!"), description='MyDiscordBot')
+
 
 @bot.command()
 async def rekt(context):
@@ -23,9 +24,11 @@ async def rekt(context):
     else:
         await context.send('Nop.')
 
+
 @bot.command()
 async def self(context):
     await context.send(context.author)
+
 
 @bot.event
 async def on_ready():
