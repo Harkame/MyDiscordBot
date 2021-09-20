@@ -1,10 +1,10 @@
-- title: my-playist
-  urls:
-  - https://www.youtube.com/watch?v=3OEX_tVDbdw
-  - https://www.youtube.com/watch?v=4Hdwf1pz8kA
-- title: ghost
-  urls:
-  - https://www.youtube.com/watch?v=4kNetd_lISI&list=RD4kNetd_lISI&start_radio=1
-- title: toto
-  urls:
-  - test
+- songs:
+  - https://www.youtube.com/watch?v=VR90gQ-SIaY
+  - https://www.youtube.com/watch?v=VLFfSDEA26o
+  - https://www.youtube.com/watch?v=R82OM5tzcrk
+  - https://www.youtube.com/watch?v=ec0XKhAHR5I
+  - https://www.youtube.com/watch?v=TLV4_xaYynY
+  title: Rock
+- songs:
+  - https://www.youtube.com/watch?v=QRjllL-MP0U
+  title: Classic

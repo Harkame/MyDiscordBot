@@ -10,12 +10,12 @@ TIMEOUT_CHANNEl = 30
 
 
 class Random(commands.Cog):
-    __slots__ = ('bot', 'players')
+    __slots__ = ("bot", "players")
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='random', aliases=['rand'])
+    @commands.command(name="random", aliases=["rand"])
     async def random(self, context, *args: int):
         """Generate random number"""
         if len(args) == 1:
