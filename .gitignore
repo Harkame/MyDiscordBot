@@ -10,3 +10,9 @@ build/
 dist/
 *.pyc
 *.webm
+*.mp3
+*.o
+*.dll
+*.s
+main.build/*
+*.wwebm

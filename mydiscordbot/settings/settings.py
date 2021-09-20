@@ -1,29 +1,42 @@
-from helper.argument_helper import get_arguments
+from helpers import helper_config, helper_argument
+
+import os
 
 import logging
 
 logger = logging.getLogger()
 token = None
 
-def init(arguments):
-    global logger
 
+def init(arguments):
     global token
+
+    global playists
+
+    playists = helper_config.get_config(os.path.join(".", "playists.yml"))
+
+    if playists is None:
+        playists = []
+
+    print(playists)
 
     init_arguments(arguments)
 
-    logger.debug('token : %s', token)
+    logger.debug("token : %s", token)
+
 
 def init_arguments(arguments):
     global logger
 
     global token
 
-    arguments = get_arguments(arguments)
+    arguments = helper_argument.get_arguments(arguments)
 
     if arguments.verbose:
         logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(module)s :: %(lineno)s :: %(funcName)s :: %(message)s')
+        formatter = logging.Formatter(
+            "%(asctime)s :: %(levelname)s :: %(module)s :: %(lineno)s :: %(funcName)s :: %(message)s"
+        )
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(formatter)
 
