@@ -1,3 +1,4 @@
 discord.py
 pyyaml
 youtube_dl
+validators
