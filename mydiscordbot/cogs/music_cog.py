@@ -44,7 +44,8 @@ ffmpegopts = {
     "options": "-vn",
 }
 
-executable = os.path.join("bin", "ffmpeg")
+# executable = os.path.join("bin", "ffmpeg")
+executable = os.path.join("ffmpeg")
 
 ytdl = YoutubeDL(ytdlopts)
 

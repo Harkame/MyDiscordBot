@@ -21,7 +21,6 @@ async def rekt(context):
     if str(context.author) == "Harkame#2009":
         await context.send("Tchao")
         await bot.logout()
-        sys.exit()
     else:
         await context.send("Nop.")
 
