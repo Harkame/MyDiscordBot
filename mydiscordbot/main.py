@@ -33,4 +33,5 @@ async def on_ready():
 
 bot.add_cog(Music(bot))
 bot.add_cog(Random(bot))
+
 bot.run(settings.token)

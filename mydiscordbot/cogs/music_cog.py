@@ -299,8 +299,8 @@ class Music(commands.Cog):
 
         await context.send(f"Connected to: **{channel}**", delete_after=20)
 
-    @commands.command(name="play", aliases=["sing"])
-    async def play(self, context, *, search: str):
+    @commands.command(name="play")
+    async def play(self, context, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
         Uses YTDL to automatically search and retrieve a song.
@@ -325,6 +325,20 @@ class Music(commands.Cog):
         )
 
         await player.queue.put(source)
+
+    @commands.command(name="veg")
+    async def veg(self, context):
+        await self.play(
+            context,
+            search="https://www.youtube.com/watch?v=Wb0sytKNFM0&feature=youtu.be",
+        )
+
+    @commands.command(name="mec")
+    async def mec(self, context):
+        await self.play(
+            context,
+            search="https://www.youtube.com/watch?v=y47njK4mrk8&feature=youtu.be",
+        )
 
     @commands.command(name="pause")
     async def pause(self, context):
@@ -356,7 +370,7 @@ class Music(commands.Cog):
         vc.resume()
         await context.send(f"**`{context.author}`**: Resumed the song!")
 
-    @commands.command(name="skip")
+    @commands.command(name="skip", aliases=["next"])
     async def skip_(self, context):
         """Skip the song."""
         vc = context.voice_client
