@@ -315,6 +315,7 @@ class Music(commands.Cog):
 
         if not vc:
             await context.invoke(self.connect_)
+            await self.martinez(context)
 
         player = self.get_player(context)
 
@@ -331,6 +332,18 @@ class Music(commands.Cog):
         await self.play(
             context,
             search="https://www.youtube.com/watch?v=Wb0sytKNFM0&feature=youtu.be",
+        )
+
+    @commands.command(name="martinez")
+    async def martinez(self, context):
+        await self.play(
+            context, search="https://www.youtube.com/watch?v=tbQShwfsFmE",
+        )
+
+    @commands.command(name="pd")
+    async def pd(self, context):
+        await self.play(
+            context, search="https://www.youtube.com/watch?v=tbQShwfsFmE",
         )
 
     @commands.command(name="mec")
