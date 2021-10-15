@@ -334,6 +334,12 @@ class Music(commands.Cog):
             search="https://www.youtube.com/watch?v=Wb0sytKNFM0&feature=youtu.be",
         )
 
+    @commands.command(name="calbut")
+    async def calbut(self, context):
+        await self.play(
+            context, search="https://www.youtube.com/watch?v=Mwxk8CR5Kfk",
+        )
+
     @commands.command(name="martinez")
     async def martinez(self, context):
         await self.play(
