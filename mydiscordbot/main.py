@@ -18,11 +18,15 @@ bot = commands.Bot(
 
 @bot.command()
 async def rekt(context):
+    await context.send("Tchao")
+    await bot.logout()
+    """
     if str(context.author) == "Harkame#2009":
         await context.send("Tchao")
         await bot.logout()
     else:
         await context.send("Nop.")
+    """
 
 
 @bot.command()
