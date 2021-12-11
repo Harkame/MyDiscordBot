@@ -346,12 +346,6 @@ class Music(commands.Cog):
             context, search="https://www.youtube.com/watch?v=tbQShwfsFmE",
         )
 
-    @commands.command(name="pd")
-    async def pd(self, context):
-        await self.play(
-            context, search="https://www.youtube.com/watch?v=tbQShwfsFmE",
-        )
-
     @commands.command(name="mec")
     async def mec(self, context):
         await self.play(

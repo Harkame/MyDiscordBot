@@ -13,13 +13,6 @@ def init(arguments):
 
     global playists
 
-    playists = helper_config.get_config(os.path.join(".", "playists.yml"))
-
-    if playists is None:
-        playists = []
-
-    print(playists)
-
     init_arguments(arguments)
 
     logger.debug("token : %s", token)
