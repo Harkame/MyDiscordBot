@@ -3,3 +3,4 @@ pyyaml
 youtube_dl
 validators
 pynacl
+requests
