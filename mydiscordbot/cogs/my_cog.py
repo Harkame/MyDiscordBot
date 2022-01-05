@@ -58,8 +58,7 @@ class MyCog(commands.Cog):
         print(name)
 
         if name == "harkame":
-            r = randrange(2)
-            if r == 1:
+            if randrange(2) == 1:
                 name = "curtis"
             else:
                 name = "daddy"
