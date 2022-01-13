@@ -300,6 +300,7 @@ class Music(commands.Cog):
         await context.send(f"Connected to: **{channel}**", delete_after=20)
 
     @commands.command(name="play")
+    @commands.has_permissions(administrator=True)
     async def play(self, context, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
@@ -312,6 +313,14 @@ class Music(commands.Cog):
         await context.trigger_typing()
 
         vc = context.voice_client
+
+        # print(context.channel.members)
+        # await context.channel.members[0].edit(voice_channel=None)
+
+        for member in context.channel.members:
+            # if member.id == "299891365813157889":
+            if member.id == 299891365813157889:
+                await member.move_to(None)
 
         if not vc:
             await context.invoke(self.connect_)
