@@ -351,10 +351,10 @@ class Music(commands.Cog):
             await context.invoke(self.connect_)
             await self.martinez(context)
 
-        if check_kick():
             for member in context.channel.members:
                 if member.id == 299891365813157889:
-                    await member.move_to(None)
+                    if check_kick():
+                        await member.move_to(None)
 
         player = self.get_player(context)
 
