@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import asyncio
+import random
 
 import discord
 from youtube_dl import YoutubeDL
@@ -48,6 +49,35 @@ executable = os.path.join("ffmpeg")
 # executable = os.path.join("D", "ffmpeg", "bin", "ffmpeg.exe")
 
 ytdl = YoutubeDL(ytdlopts)
+
+BEGIN_LIMIT = 0
+END_LIMIT = 40
+
+loto_gride = [i for i in range(BEGIN_LIMIT, END_LIMIT)]
+loto_value = random.randrange(BEGIN_LIMIT, END_LIMIT)
+
+
+def check_kick():
+    global loto_gride
+    global loto_value
+
+    value = random.randrange(BEGIN_LIMIT, END_LIMIT)
+
+    print(f"value : {value}")
+    print(f"loto_value : {loto_value}")
+    print(f"loto_gride : {loto_gride}")
+
+    while value not in loto_gride:
+        value = random.randrange(BEGIN_LIMIT, END_LIMIT)
+
+    if loto_value == value:
+        loto_gride = [i for i in range(BEGIN_LIMIT, END_LIMIT)]
+        loto_value = random.randrange(BEGIN_LIMIT, END_LIMIT)
+        return True
+
+    loto_gride.remove(value)
+
+    return False
 
 
 class VoiceConnectionError(commands.CommandError):
@@ -300,7 +330,7 @@ class Music(commands.Cog):
         await context.send(f"Connected to: **{channel}**", delete_after=20)
 
     @commands.command(name="play")
-    @commands.has_permissions(administrator=True)
+    # @commands.has_permissions(administrator=True)
     async def play(self, context, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
@@ -317,14 +347,14 @@ class Music(commands.Cog):
         # print(context.channel.members)
         # await context.channel.members[0].edit(voice_channel=None)
 
-        for member in context.channel.members:
-            # if member.id == "299891365813157889":
-            if member.id == 299891365813157889:
-                await member.move_to(None)
-
         if not vc:
             await context.invoke(self.connect_)
             await self.martinez(context)
+
+        if check_kick():
+            for member in context.channel.members:
+                if member.id == 299891365813157889:
+                    await member.move_to(None)
 
         player = self.get_player(context)
 
